@@ -78,7 +78,31 @@ LangChain 推出的一種宣告式語法，用於快速將各個模組 (Prompt, 
    - 系統首先將使用者的「提問文字」再次透過 Google 轉換為向量。
    - 在 **ChromaDB** 中執行相似度比對 (如 K-Nearest Neighbors 演算法)，找出之前存進去、與提問「幾何距離最近、語意最相關」的前 K 個 (預設為 3 段) 文件組塊。
 4. **LLM Service (大腦生成)**：
-   - 利用 **LCEL (Langchain Expression Language)**，將找出的前 3 段文檔內容組合為「上下文 (Context)」。
+   - 利用 **LCEL (Langchain Expression Language)**，將找出的前 3 段文檔內容組合為「上下文 (Context)」。這也是本專案最核心的 RAG 組裝邏輯：
+   ```python
+   # LCEL (LangChain Expression Language) 核心 RAG 組裝語法
+   from langchain_core.prompts import ChatPromptTemplate
+   from langchain_core.runnables import RunnablePassthrough
+   from langchain_core.output_parsers import StrOutputParser
+
+   # 1. 建立提示詞模板
+   prompt = ChatPromptTemplate.from_template("""
+   請根據以下提供的 Context 回答問題。若 Context 中沒有相關資訊，請誠實說明不知道。
+   Context: {context}
+   Question: {question}
+   """)
+
+   # 2. 將 Retriever, Prompt, LLM 與 Parser 透過 Pipeline `|` 符號串接
+   rag_chain = (
+       {"context": retriever | format_docs, "question": RunnablePassthrough()}
+       | prompt
+       | llm
+       | StrOutputParser()
+   )
+
+   # 3. 呼叫產生回答
+   answer = rag_chain.invoke(question)
+   ```
    - 把 Context 與使用者的 Question 一起塞入準備好的**提示詞模板 (Prompt Template)**，告訴 AI：「請『只』根據這些上下文回答問題」。
    - 將完整的 Prompt 送給 Google 大語言模型 (`gemini-2.5-flash`)。
 5. **最終產出 (Output)**：FastAPI 接收到 Gemini 產生的最終答案後，連同「剛剛參考的那 3 段文檔來源 (Sources)」，一起打包回傳給前端網頁顯示。
