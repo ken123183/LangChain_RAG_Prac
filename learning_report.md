@@ -68,7 +68,21 @@ LangChain 推出的一種宣告式語法，用於快速將各個模組 (Prompt, 
 4. **Vector Store Service (向量化與儲存)**：
    - 將這些文字 Chunks 透過網路送到 Google API (`gemini-embedding-001`)。
    - Google 會將每一段文字轉換成高維度的**數學向量 (Vector Embeddings)**。
-   - 後端將這些「文字 + 對應的向量」存入本機的實體向量庫 **ChromaDB** 中 (`./chroma_db` 資料夾)。
+   - 後端將這些「文字 + 對應的向量」存入本機的實體向量庫 **ChromaDB** 中 (`./chroma_db` 資料夾)。以下為儲存邏輯的實作核心：
+   ```python
+   # 初始化 Google 向量嵌入模型
+   embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
+   
+   # 建立 Chroma 資料庫物件 (指定本地儲存路徑)
+   vector_store = Chroma(
+       collection_name="rag_collection",
+       embedding_function=embeddings,
+       persist_directory="./chroma_db"
+   )
+   
+   # 將 Document Service 傳來的文檔區塊 (Chunks) 寫入資料庫
+   vector_store.add_documents(documents=chunks)
+   ```
 
 ### 階段二：檢索與生成流程 (Retrieval & Generation)
 當使用者在前端聊天框輸入問題並按下 **送出 (按 Enter)** 時：
