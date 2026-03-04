@@ -1,0 +1,37 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# Virtual Environments
+venv/
+env/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Vector Database (Local Data)
+chroma_db/
+uploaded_docs/
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Temporary Files / Logs
+err.txt
+*.log
+
+# Frontend Build (if any future build steps are added)
+node_modules/
+dist/
+build/
