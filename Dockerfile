@@ -27,6 +27,9 @@ ENV PYTHONPATH=/app/backend
 # 如果使用 Render，可以在 Render 設定中指定 Port
 EXPOSE 7860
 
+# 授權整個 /app 目錄，確保 ChromaDB 有權限寫入 (解決 1032 Readonly 錯誤)
+RUN chmod -R 777 /app
+
 # 啟動命令：從根目錄執行 uvicorn，並指定 backend.main:app
 # 使用 0.0.0.0 讓外部可以連線
 CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "7860"]
