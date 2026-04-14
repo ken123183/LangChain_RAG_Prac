@@ -108,6 +108,44 @@ document.addEventListener("DOMContentLoaded", () => {
         if (e.target.files.length > 0) fileNameDisplay.textContent = e.target.files[0].name;
     });
 
+    // Sample Loading Logic
+    document.querySelectorAll(".sample-btn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            const filename = btn.getAttribute("data-file");
+            const credentials = getCredentials();
+            if (!credentials) return;
+
+            uploadStatus.textContent = `⏳ 正在從雲端同步: ${filename}...`;
+            uploadStatus.style.color = "var(--primary)";
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_URL}/documents/load-local`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ 
+                        filename, 
+                        api_key: credentials.apiKey, 
+                        password: credentials.password 
+                    })
+                });
+
+                if (response.ok) {
+                    uploadStatus.textContent = `✅ ${filename} 載入成功！`;
+                    uploadStatus.style.color = "var(--success)";
+                } else {
+                    const error = await response.json();
+                    uploadStatus.textContent = `❌ 載入失敗: ${error.detail}`;
+                    uploadStatus.style.color = "var(--error)";
+                }
+            } catch (error) {
+                uploadStatus.textContent = "❌ 連線錯誤";
+            } finally {
+                btn.disabled = false;
+            }
+        });
+    });
+
     uploadBtn.addEventListener("click", async () => {
         const file = fileUpload.files[0];
         if (!file) {

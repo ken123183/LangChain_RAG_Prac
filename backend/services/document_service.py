@@ -27,8 +27,12 @@ class DocumentService:
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
             
+        return self.process_local_file(file_path)
+
+    def process_local_file(self, file_path: str):
         # Load document
-        if file.filename.endswith(".pdf"):
+        filename = os.path.basename(file_path)
+        if filename.endswith(".pdf"):
             loader = PyPDFLoader(file_path)
         else:
             loader = TextLoader(file_path, encoding="utf8")
@@ -38,7 +42,6 @@ class DocumentService:
         # Split text
         chunks = self.text_splitter.split_documents(docs)
         
-        # Opt: remove file after process or keep it
         return chunks
 
 document_service = DocumentService()
