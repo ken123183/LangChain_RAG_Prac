@@ -1,3 +1,12 @@
+---
+title: My Rag Demo
+emoji: 🚀
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 7860
+---
+
 # LangChain RAG 系統 (前後端分離版)
 
 這是一個基於 **LangChain**、**Google Gemini** (**Gemini 2.5 Flash**)、以及 **ChromaDB** 實作的 RAG (Retrieval-Augmented Generation, 檢索增強生成) 系統。
@@ -89,7 +98,7 @@ uvicorn main:app --reload
 
 ### 2. 向量資料庫 Chunk 的最佳化管理 (Vector DB / Chunking Strategy)
 目前我們是「固定字數 1000」一刀切，這很容易導致一句話或一個段落被攔腰截斷，嚴重影響 RAG 檢索準確率。
-*   **語意切塊 (Semantic Chunking)**：與其按字數切，不如按「段落 (Paragraph)」、「標題 (Header)」切塊。Langchain 提供了 `MarkdownHeaderTextSplitter`，如果能先將 PDF 轉為 Markdown 再切塊，效果會大幅提升。
+*   **語語切塊 (Semantic Chunking)**：與其按字數切，不如按「段落 (Paragraph)」、「標題 (Header)」切塊。Langchain 提供了 `MarkdownHeaderTextSplitter`，如果能先將 PDF 轉為 Markdown 再切塊，效果會大幅提升。
 *   **Parent-Document Retriever (父子檢索)**：將文檔切成極小的 Chunk (例如 200 字) 存入向量庫以求「高精準比對」；但當比對中時，回傳給 LLM 閱讀的卻是包含該小片段的「完整段落 (1000字以上的 Parent Document)」以提供完整上下文。
 *   **對話過濾與資料隔離 (Metadata Filtering)**：在呼叫 `Chroma.from_documents` 時，為 Chunk 加上 `metadata={"user_id": "123", "doc_name": "report.pdf"}`。檢索時加入過濾條件，確保使用者 A 只會根據他自己上傳的文件進行問答，不會檢索到使用者 B 的機密履歷。
 
