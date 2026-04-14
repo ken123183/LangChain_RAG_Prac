@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const fileNameDisplay = document.getElementById("file-name-display");
     const uploadBtn = document.getElementById("upload-btn");
     const uploadStatus = document.getElementById("upload-status");
+    const resetVaultBtn = document.getElementById("reset-vault-btn");
     
     const chatInput = document.getElementById("chat-input");
     const sendBtn = document.getElementById("send-btn");
@@ -70,6 +71,33 @@ document.addEventListener("DOMContentLoaded", () => {
     // Event Listeners for Viewer
     toggleViewerBtn.addEventListener("click", () => toggleViewer());
     closeViewerBtn.addEventListener("click", () => toggleViewer(false));
+
+    // Reset Knowledge logic
+    resetVaultBtn.addEventListener("click", async () => {
+        if (!confirm("⚠️ 確定要清空目前的知識庫嗎？這將會刪除所有已載入的文件記憶。")) return;
+        
+        resetVaultBtn.disabled = true;
+        uploadStatus.textContent = "⏳ 正在清空知識庫...";
+        
+        try {
+            const response = await fetch(`${API_URL}/documents/reset`, { method: "POST" });
+            if (response.ok) {
+                uploadStatus.textContent = "🗑️ 知識庫已清空";
+                uploadStatus.style.color = "var(--success)";
+                chatMessages.innerHTML = ""; // Clear chat
+                docContent.textContent = "知識庫已重置。請重新載入文檔以開始。";
+                currentDocTitle.textContent = "No Document Loaded";
+                toggleViewer(false);
+            } else {
+                uploadStatus.textContent = "❌ 清空失敗";
+                uploadStatus.style.color = "var(--error)";
+            }
+        } catch (error) {
+            uploadStatus.textContent = "❌ 連線錯誤";
+        } finally {
+            resetVaultBtn.disabled = false;
+        }
+    });
 
     // Verify Credentials
     async function verifyCredentials(apiKey = "", password = "") {
@@ -145,7 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (response.ok) {
                     uploadStatus.textContent = `✅ 知識同步完成！`;
                     uploadStatus.style.color = "var(--success)";
-                    fetchAndDisplayContent(filename); // Automatically show content
+                    fetchAndDisplayContent(filename);
                 } else {
                     const error = await response.json();
                     uploadStatus.textContent = `❌ 載入失敗: ${error.detail}`;
@@ -209,7 +237,17 @@ document.addEventListener("DOMContentLoaded", () => {
         container.className = `msg-container ${role}`;
         let sourcesHtml = "";
         if (sources && sources.length > 0) {
-            sourcesHtml = `<div class="source-box"><strong>📚 來源引用:</strong><br>${sources.map(s => `• 第 ${s.page} 頁: ${s.content.substring(0, 60)}...`).join("<br>")}</div>`;
+            const uniqueSources = {};
+            sources.forEach(s => {
+                const key = `${s.source}_${s.page || 'none'}`;
+                if (!uniqueSources[key]) uniqueSources[key] = s;
+            });
+
+            sourcesHtml = `<div class="source-box"><strong>📚 來源引用:</strong><br>${Object.values(uniqueSources).map(s => {
+                const pageInfo = s.page ? ` (第 ${s.page} 頁)` : "";
+                const sourceName = s.source.split(/[\\/]/).pop();
+                return `• ${sourceName}${pageInfo}: ${s.content.substring(0, 60)}...`;
+            }).join("<br>")}</div>`;
         }
         container.innerHTML = `<div class="msg-bubble">${content.replace(/\n/g, '<br>')}${sourcesHtml}</div>`;
         chatMessages.appendChild(container);
@@ -237,10 +275,13 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
             chatMessages.removeChild(loadingMsg);
             if (response.ok) appendMessage("bot", data.reply, data.sources);
-            else appendMessage("bot", `❌ 錯誤: ${data.detail || "無法連線"}`);
+            else {
+                appendMessage("bot", `❌ 錯誤: ${data.detail || "內部伺服器錯誤"}`);
+                if (response.status === 401) updateAuthUI('error');
+            }
         } catch (error) {
             if (loadingMsg.parentNode) chatMessages.removeChild(loadingMsg);
-            appendMessage("bot", "❌ 連線錯誤。");
+            appendMessage("bot", "❌ 連線出錯。請檢查 API Key 或網路。");
         } finally {
             sendBtn.disabled = false;
         }

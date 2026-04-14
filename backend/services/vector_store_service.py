@@ -39,4 +39,20 @@ class VectorStoreService:
         )
         return vectorstore.as_retriever(search_kwargs={"k": 3})
 
+    def reset_store(self):
+        """
+        徹底清空向量庫資料。
+        """
+        import shutil
+        import os
+        if os.path.exists(self.persist_directory):
+            try:
+                shutil.rmtree(self.persist_directory)
+                os.makedirs(self.persist_directory, exist_ok=True)
+                return True
+            except Exception as e:
+                print(f"Reset failed: {e}")
+                return False
+        return True
+
 vector_store_service = VectorStoreService()
