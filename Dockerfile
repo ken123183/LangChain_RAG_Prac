@@ -17,6 +17,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 複製後端與前端程式碼
 COPY backend/ ./backend/
 COPY frontend/ ./frontend/
+COPY demo_docs/ ./demo_docs/
+COPY Antigravity_Dynamics_Employee_Handbook_2026.md ./demo_docs/
 
 # 設定環境變數 PYTHONPATH，確保模組導入正確
 ENV PYTHONPATH=/app/backend
