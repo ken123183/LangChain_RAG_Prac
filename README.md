@@ -9,8 +9,15 @@ app_port: 7860
 
 # LangChain RAG 系統 (前後端分離版)
 
-這是一個基於 **LangChain**、**Google Gemini** (**Gemini 2.5 Flash**)、以及 **ChromaDB** 實作的 RAG (Retrieval-Augmented Generation, 檢索增強生成) 系統。
-系統架構採用標準的**前後端分離 (Frontend-Backend Separation)** 設計，確保了程式碼的可維護性 (Clean Code) 與未來的擴充性。
+🚀 **[Live Demo on Hugging Face Spaces](https://huggingface.co/spaces/ken123183/my-rag-demo)**
+
+這是一個基於 **LangChain**、**Google Gemini** (**Gemini 2.5 Flash**)、以及 **ChromaDB** 實作的高級 RAG (Retrieval-Augmented Generation) 系統。
+
+### ✨ 特色功能
+- **三欄式專業佈局**：包含側邊管理欄、聊天視窗、以及**文點原文預覽面板**。
+- **雲端樣本載入 (Option B)**：內建技術規格書與員工手冊，無需上傳即可一鍵載入測試。
+- **知識庫管理**：支援多檔案向量檢索，並提供一鍵「清空知識庫」功能，確保展示不干擾。
+- **安全性驗證 (Vault)**：支援 API Key 驗證與 Demo 專屬密碼解鎖，保護您的資源安全。
 
 ## 系統架構
 
