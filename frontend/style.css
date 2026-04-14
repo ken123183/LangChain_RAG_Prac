@@ -84,8 +84,11 @@ body {
     border-right: 1px solid var(--border-glass);
     display: flex;
     flex-direction: column;
-    padding: 2rem 1.5rem;
-    gap: 2.5rem;
+    padding: 2rem 1.25rem;
+    gap: 2rem;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-glass) transparent;
 }
 
 .logo-area {
