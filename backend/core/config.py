@@ -14,8 +14,8 @@ class Settings(BaseSettings):
     # Optional default API key, but we mainly expect it from the frontend client request
     GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY", "")
     
-    # ChromaDB Settings
-    CHROMA_PERSIST_DIRECTORY: str = "./chroma_db"
+    # ChromaDB Settings (使用 /tmp 以確保在雲端環境具備寫入權限)
+    CHROMA_PERSIST_DIRECTORY: str = "/tmp/chroma_db"
     
     # Security Settings
     DEMO_PASSWORD: str = os.getenv("DEMO_PASSWORD", "123456")
