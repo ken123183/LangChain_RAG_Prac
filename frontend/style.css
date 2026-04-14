@@ -103,6 +103,32 @@ body {
 }
 .glass-input input:focus { border-color: var(--primary); background: rgba(255, 255, 255, 0.07); }
 
+.input-with-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.mini-btn {
+    position: absolute;
+    right: 5px;
+    background: var(--primary);
+    color: white;
+    font-size: 0.65rem;
+    padding: 0.4rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px var(--primary-glow);
+    transition: all 0.3s;
+}
+
+.mini-btn:hover {
+    transform: scale(1.05);
+    background: var(--accent);
+}
+
 .divider { position: relative; text-align: center; margin: 1.25rem 0; }
 .divider::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--border-glass); }
 .divider span { position: relative; background: #0d121b; padding: 0 10px; font-size: 0.6rem; color: var(--text-dim); }
