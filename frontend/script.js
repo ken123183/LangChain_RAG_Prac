@@ -103,7 +103,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const key = apiKeyInput.value.trim();
         if (key) {
             verifyCredentials(key, "").then(isValid => {
-                if (isValid) localStorage.setItem("google_api_key", key);
+                if (isValid) {
+                    localStorage.setItem("google_api_key", key);
+                    uploadStatus.textContent = "✅ API Key 已套用，知識庫已解鎖。";
+                    uploadStatus.style.color = "var(--success)";
+                }
             });
         }
     });

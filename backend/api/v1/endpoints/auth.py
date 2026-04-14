@@ -15,11 +15,8 @@ async def verify_credentials(request: VerifyRequest):
     此端點僅用於 UI 反饋。
     """
     if request.api_key and request.api_key.strip():
-        # 這裡僅做基本格式檢查 (例如 Google API Key 通常以 AIza 開頭)
-        if request.api_key.startswith("AIza"):
-            return {"status": "success", "message": "API Key 格式正確"}
-        else:
-            raise HTTPException(status_code=400, detail="無效的 API Key 格式")
+        # 放寬檢查，只要不為空即視為自備 Key，實際有效性交由 LLM 執行時判定
+        return {"status": "success", "message": "API Key 已接收"}
 
     if request.password:
         if request.password == settings.DEMO_PASSWORD:
