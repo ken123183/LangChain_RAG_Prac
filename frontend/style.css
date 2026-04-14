@@ -80,13 +80,17 @@ body {
 /* Sidebar Styling */
 .sidebar {
     width: 340px;
+    height: 100vh;
+    max-height: 100vh;
+    min-height: 0;
     background: var(--bg-glass);
     border-right: 1px solid var(--border-glass);
     display: flex;
     flex-direction: column;
-    padding: 2rem 1.25rem;
-    gap: 2rem;
+    padding: 2.5rem 1.25rem;
+    gap: 1.75rem;
     overflow-y: auto;
+    overflow-x: hidden;
     scrollbar-width: thin;
     scrollbar-color: var(--border-glass) transparent;
 }
