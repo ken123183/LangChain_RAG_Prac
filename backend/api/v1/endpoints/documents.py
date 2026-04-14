@@ -61,3 +61,31 @@ async def load_local_document(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.get("/view")
+async def view_document(filename: str):
+    """
+    讀取並回傳 demo_docs 目錄下檔案的內容，用於前端預覽。
+    """
+    import os
+    file_path = os.path.join(os.getcwd(), "demo_docs", filename)
+    
+    if not os.path.exists(file_path):
+        # 如果 demo_docs 找不到，也檢查一下上傳目錄 (uploaded_docs)
+        file_path = os.path.join(os.getcwd(), "uploaded_docs", filename)
+        if not os.path.exists(file_path):
+            raise HTTPException(status_code=404, detail="File not found")
+
+    try:
+        if filename.endswith(".pdf"):
+            # 對於 PDF，我們可以用 PyPDFLoader 萃取純文字回傳
+            from langchain_community.document_loaders import PyPDFLoader
+            loader = PyPDFLoader(file_path)
+            docs = loader.load()
+            content = "\n".join([doc.page_content for doc in docs])
+        else:
+            with open(file_path, "r", encoding="utf-8") as f:
+                content = f.read()
+        return {"filename": filename, "content": content}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+

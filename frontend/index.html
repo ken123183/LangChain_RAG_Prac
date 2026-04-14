@@ -7,8 +7,8 @@
     <!-- Premium Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Manrope:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.4">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Manrope:wght@400;600&family=Fira+Code:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=2.5">
 </head>
 <body>
     <div class="app-background">
@@ -78,34 +78,54 @@
             </div>
         </aside>
 
-        <!-- Main Chat Area -->
-        <main class="chat-viewport">
-            <header class="chat-nav">
-                <div class="nav-info">
-                    <h2>Knowledge Assistant</h2>
-                    <p>RAG-Augmented Private Intelligence</p>
-                </div>
-            </header>
-            
-            <div id="chat-messages" class="chat-feed">
-                <!-- Welcome Message -->
-                <div class="msg-container system">
-                    <div class="msg-bubble">
-                        👋 歡迎使用 <strong>Antigravity RAG</strong>。請先在左側完成身份驗證，並上傳您的文件以開展對話。
+        <!-- Main Content Area (Multi-Column) -->
+        <div class="content-wrapper">
+            <main class="chat-viewport">
+                <header class="chat-nav">
+                    <div class="nav-info">
+                        <h2>Knowledge Assistant</h2>
+                        <p>RAG-Augmented Private Intelligence</p>
+                    </div>
+                    <button id="toggle-viewer-btn" class="icon-btn" title="切換文檔檢視">
+                        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                    </button>
+                </header>
+                
+                <div id="chat-messages" class="chat-feed">
+                    <div class="msg-container system">
+                        <div class="msg-bubble">
+                            👋 歡迎。完成身份驗證並載入文檔後，對話與預覽面板將自動開啟。
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="input-container">
-                <div class="input-wrapper">
-                    <input type="text" id="chat-input" placeholder="對文件內容進行提問...">
-                    <button id="send-btn">
-                        <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-                    </button>
+                <div class="input-container">
+                    <div class="input-wrapper">
+                        <input type="text" id="chat-input" placeholder="對文件內容進行提問...">
+                        <button id="send-btn">
+                            <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                        </button>
+                    </div>
                 </div>
-            </div>
-        </main>
+            </main>
+
+            <!-- Document Viewer Panel -->
+            <section class="document-viewer collapsed" id="doc-viewer">
+                <header class="viewer-header">
+                    <div class="viewer-title">
+                        <span>SOURCE PREVIEW</span>
+                        <h3 id="current-doc-title">No Document Loaded</h3>
+                    </div>
+                    <button id="close-viewer" class="close-btn">×</button>
+                </header>
+                <div class="viewer-body">
+                    <div id="doc-content" class="doc-text">
+                        載入文檔後，此處將顯示原文內容以供對照...
+                    </div>
+                </div>
+            </section>
+        </div>
     </div>
-    <script src="script.js?v=2.4"></script>
+    <script src="script.js?v=2.5"></script>
 </body>
 </html>
