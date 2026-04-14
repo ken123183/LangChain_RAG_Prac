@@ -1,24 +1,41 @@
-const API_URL = "/api/v1";
-
 document.addEventListener("DOMContentLoaded", () => {
-    // Elements
+    const API_URL = "/api/v1"; // Using relative path for deployment
+    
+    // UI Elements
     const apiKeyInput = document.getElementById("api-key");
+    const demoPasswordInput = document.getElementById("demo-password");
     const saveKeyBtn = document.getElementById("save-key-btn");
+    const authStatus = document.getElementById("auth-status");
+    
     const fileUpload = document.getElementById("file-upload");
+    const dropzone = document.getElementById("dropzone");
+    const fileNameDisplay = document.getElementById("file-name-display");
     const uploadBtn = document.getElementById("upload-btn");
     const uploadStatus = document.getElementById("upload-status");
+    
     const chatInput = document.getElementById("chat-input");
     const sendBtn = document.getElementById("send-btn");
     const chatMessages = document.getElementById("chat-messages");
 
-    const demoPasswordInput = document.getElementById("demo-password");
-    
-    // Retrieve saved key from localStorage
+    // LocalStorage Logic
     const savedKey = localStorage.getItem("google_api_key");
     if (savedKey) {
         apiKeyInput.value = savedKey;
-        saveKeyBtn.textContent = "Saved";
-        saveKeyBtn.classList.add("saved");
+        updateAuthUI(true);
+    }
+
+    function updateAuthUI(isUnlocked) {
+        if (isUnlocked) {
+            authStatus.classList.remove("locked");
+            authStatus.classList.add("unlocked");
+            saveKeyBtn.textContent = "Vault Secured";
+            saveKeyBtn.style.background = "var(--success)";
+        } else {
+            authStatus.classList.remove("unlocked");
+            authStatus.classList.add("locked");
+            saveKeyBtn.textContent = "Secure Key";
+            saveKeyBtn.style.background = "var(--primary)";
+        }
     }
 
     // Save key
@@ -26,8 +43,17 @@ document.addEventListener("DOMContentLoaded", () => {
         const key = apiKeyInput.value.trim();
         if (key) {
             localStorage.setItem("google_api_key", key);
-            saveKeyBtn.textContent = "Saved";
-            setTimeout(() => { saveKeyBtn.textContent = "Save Key"; }, 2000);
+            updateAuthUI(true);
+            setTimeout(() => { if(!demoPasswordInput.value) updateAuthUI(true); }, 2000);
+        }
+    });
+
+    // Demo password trigger UI update
+    demoPasswordInput.addEventListener("input", () => {
+        if (demoPasswordInput.value.length > 0) {
+            updateAuthUI(true);
+        } else if (!apiKeyInput.value) {
+            updateAuthUI(false);
         }
     });
 
@@ -37,41 +63,34 @@ document.addEventListener("DOMContentLoaded", () => {
         const password = demoPasswordInput.value.trim() || "";
         
         if (!apiKey && !password) {
-            alert("請輸入 Google API Key 或 Demo 存取密碼。");
+            alert("🔒 請解鎖金庫：請輸入 Google API Key 或 Demo 存取密碼。");
             return null;
         }
         return { apiKey, password };
     };
 
-    // Append Message to Chat
-    const appendMessage = (sender, text, isSystem = false) => {
-        const msgDiv = document.createElement("div");
-        msgDiv.classList.add("message");
-        if (isSystem) {
-            msgDiv.classList.add("system-message");
-        } else {
-            msgDiv.classList.add(sender === "user" ? "user-message" : "bot-message");
+    // File Upload Handling
+    dropzone.addEventListener("click", () => fileUpload.click());
+    
+    fileUpload.addEventListener("change", (e) => {
+        if (e.target.files.length > 0) {
+            fileNameDisplay.textContent = e.target.files[0].name;
         }
+    });
 
-        msgDiv.textContent = text;
-        chatMessages.appendChild(msgDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-        return msgDiv;
-    };
-
-    // Upload Document
     uploadBtn.addEventListener("click", async () => {
         const file = fileUpload.files[0];
         if (!file) {
-            uploadStatus.textContent = "Please select a file.";
+            uploadStatus.textContent = "❌ 請先選擇檔案";
             uploadStatus.style.color = "var(--error)";
             return;
         }
+        
         const credentials = getCredentials();
         if (!credentials) return;
 
-        uploadStatus.textContent = "Uploading and processing...";
-        uploadStatus.style.color = "var(--text-main)";
+        uploadStatus.textContent = "⏳ 正在將知識注入庫中...";
+        uploadStatus.style.color = "var(--primary)";
         uploadBtn.disabled = true;
 
         const formData = new FormData();
@@ -84,45 +103,66 @@ document.addEventListener("DOMContentLoaded", () => {
                 method: "POST",
                 body: formData
             });
-            const data = await response.json();
 
             if (response.ok) {
-                uploadStatus.textContent = `Success! ${data.chunks_count} chunks processed.`;
+                uploadStatus.textContent = "✅ 知識同步完成！";
                 uploadStatus.style.color = "var(--success)";
-                appendMessage("system", "Document trained successfully. You can now ask questions.", true);
             } else {
-                throw new Error(data.detail || "Upload failed");
+                const error = await response.json();
+                uploadStatus.textContent = `❌ 失敗: ${error.detail}`;
+                uploadStatus.style.color = "var(--error)";
             }
         } catch (error) {
-            uploadStatus.textContent = `Error: ${error.message}`;
+            uploadStatus.textContent = "❌ 連線錯誤";
             uploadStatus.style.color = "var(--error)";
         } finally {
             uploadBtn.disabled = false;
         }
     });
 
-    // Send Chat Message
-    const sendMessage = async () => {
+    // Chat Logic
+    function appendMessage(role, content, sources = []) {
+        const container = document.createElement("div");
+        container.className = `msg-container ${role}`;
+        
+        let sourcesHtml = "";
+        if (sources && sources.length > 0) {
+            sourcesHtml = `
+                <div class="source-box">
+                    <strong>📚 來源引用:</strong><br>
+                    ${sources.map(s => `• 第 ${s.page} 頁: ${s.content.substring(0, 80)}...`).join("<br>")}
+                </div>`;
+        }
+
+        container.innerHTML = `
+            <div class="msg-bubble">
+                ${content.replace(/\n/g, '<br>')}
+                ${sourcesHtml}
+            </div>
+        `;
+        
+        chatMessages.appendChild(container);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        return container;
+    }
+
+    async function sendMessage() {
         const query = chatInput.value.trim();
         if (!query) return;
 
         const credentials = getCredentials();
         if (!credentials) return;
 
-        // Display user query
         appendMessage("user", query);
         chatInput.value = "";
 
-        // Show loading
-        const loadingMsg = appendMessage("bot", "Thinking...");
+        const loadingMsg = appendMessage("bot", "🧬 正在檢索知識庫並生成回答...");
         sendBtn.disabled = true;
 
         try {
             const response = await fetch(`${API_URL}/chat/`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     query, 
                     api_key: credentials.apiKey, 
@@ -131,39 +171,23 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             const data = await response.json();
-
-            // Remove loading
             chatMessages.removeChild(loadingMsg);
 
             if (response.ok) {
-                const replyDiv = appendMessage("bot", data.reply);
-
-                // If there are sources, append them
-                if (data.sources && data.sources.length > 0) {
-                    const sourceBox = document.createElement("div");
-                    sourceBox.classList.add("source-box");
-                    sourceBox.innerHTML = `<strong>Sources:</strong><ul>` +
-                        data.sources.slice(0, 2).map(s => `<li>${s.metadata.source || 'Document'}</li>`).join('') +
-                        `</ul>`;
-                    replyDiv.appendChild(sourceBox);
-                }
+                appendMessage("bot", data.reply, data.sources);
             } else {
-                throw new Error(data.detail || "Chat request failed");
+                appendMessage("bot", `❌ 發生錯誤: ${data.detail || "無法連線至伺服器"}`);
             }
         } catch (error) {
-            if (chatMessages.contains(loadingMsg)) {
-                chatMessages.removeChild(loadingMsg);
-            }
-            appendMessage("bot", `Error: ${error.message}`);
+            chatMessages.removeChild(loadingMsg);
+            appendMessage("bot", "❌ 網路連線出錯，請稍後再試。");
         } finally {
             sendBtn.disabled = false;
         }
-    };
+    }
 
     sendBtn.addEventListener("click", sendMessage);
     chatInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") {
-            sendMessage();
-        }
+        if (e.key === "Enter") sendMessage();
     });
 });

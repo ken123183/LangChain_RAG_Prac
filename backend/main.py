@@ -29,14 +29,10 @@ app.add_middleware(
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
 # Serve Frontend Static Files
-# Assume we run the app from the project root
 frontend_path = os.path.join(os.getcwd(), "frontend")
 if os.path.exists(frontend_path):
-    app.mount("/static", StaticFiles(directory=frontend_path), name="static")
-
-    @app.get("/")
-    async def serve_frontend():
-        return FileResponse(os.path.join(frontend_path, "index.html"))
+    # Mount everything at / instead of /static so relative paths in HTML work
+    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
 else:
     @app.get("/")
     def root():

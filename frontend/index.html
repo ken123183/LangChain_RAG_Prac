@@ -1,59 +1,96 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Langchain RAG Chat</title>
+    <title>Antigravity RAG | AI 知識庫助手</title>
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Manrope:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="app-background">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+    </div>
+
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>RAG System</h2>
+            <div class="logo-area">
+                <div class="logo-icon">🚀</div>
+                <div>
+                    <h1>Antigravity</h1>
+                    <p>RAG Dynamics</p>
+                </div>
             </div>
             
-            <div class="settings-section">
-                <h3>Settings</h3>
-                <div class="input-group">
-                    <label for="api-key">Google API Key (Private)</label>
-                    <input type="password" id="api-key" placeholder="Enter API Key">
-                    <button id="save-key-btn" class="secondary-btn">Save Key</button>
+            <div class="vault-section">
+                <div class="section-header">
+                    <span>SECURITY VAULT</span>
+                    <div id="auth-status" class="status-indicator locked"></div>
                 </div>
-                <div class="input-group">
-                    <label for="demo-password">Demo Access Password</label>
-                    <input type="password" id="demo-password" placeholder="Or enter Demo Password">
+                
+                <div class="input-stack">
+                    <div class="glass-input">
+                        <label>Private API Key</label>
+                        <input type="password" id="api-key" placeholder="••••••••••••••••">
+                    </div>
+                    <button id="save-key-btn" class="btn-glow">Secure Key</button>
+                    
+                    <div class="divider"><span>OR USE DEMO ACCESS</span></div>
+                    
+                    <div class="glass-input">
+                        <label>Demo Password</label>
+                        <input type="password" id="demo-password" placeholder="Enter password...">
+                    </div>
                 </div>
             </div>
 
-            <div class="upload-section">
-                <h3>Document Training</h3>
-                <div class="input-group">
-                    <label for="file-upload">Upload PDF/TXT</label>
-                    <input type="file" id="file-upload" accept=".pdf,.txt">
-                    <button id="upload-btn" class="primary-btn">Train Model</button>
+            <div class="knowledge-section">
+                <h3>Knowledge Feed</h3>
+                <div class="upload-dropzone" id="dropzone">
+                    <input type="file" id="file-upload" accept=".pdf,.txt" hidden>
+                    <div class="upload-icon">📁</div>
+                    <p>Drag or Click to Upload</p>
+                    <span id="file-name-display">No file selected</span>
                 </div>
+                <button id="upload-btn" class="btn-primary">Train Knowledge Base</button>
                 <div id="upload-status" class="status-message"></div>
+            </div>
+
+            <div class="sidebar-footer">
+                <p>Status: <span id="system-ready">Ready</span></p>
             </div>
         </aside>
 
         <!-- Main Chat Area -->
-        <main class="chat-container">
-            <div class="chat-header">
-                <h2>Chat with your Documents</h2>
-            </div>
+        <main class="chat-viewport">
+            <header class="chat-nav">
+                <div class="nav-info">
+                    <h2>Knowledge Assistant</h2>
+                    <p>RAG-Augmented Private Intelligence</p>
+                </div>
+            </header>
             
-            <div id="chat-messages" class="chat-messages">
-                <div class="message system-message">
-                    Welcome! Please enter your Google API Key and upload a document to begin.
+            <div id="chat-messages" class="chat-feed">
+                <!-- Welcome Message -->
+                <div class="msg-container system">
+                    <div class="msg-bubble">
+                        👋 歡迎使用 <strong>Antigravity RAG</strong>。請先在左側完成身份驗證，並上傳您的文件以開展對話。
+                    </div>
                 </div>
             </div>
 
-            <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Ask a question about your documents...">
-                <button id="send-btn" class="primary-btn">Send</button>
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <input type="text" id="chat-input" placeholder="對文件內容進行提問...">
+                    <button id="send-btn">
+                        <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                    </button>
+                </div>
             </div>
         </main>
     </div>
