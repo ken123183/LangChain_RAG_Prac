@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const fileNameDisplay = document.getElementById("file-name-display");
     const uploadBtn = document.getElementById("upload-btn");
     const uploadStatus = document.getElementById("upload-status");
-    const resetVaultBtn = document.getElementById("reset-vault-btn");
     
     const chatInput = document.getElementById("chat-input");
     const sendBtn = document.getElementById("send-btn");
@@ -71,33 +70,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Event Listeners for Viewer
     toggleViewerBtn.addEventListener("click", () => toggleViewer());
     closeViewerBtn.addEventListener("click", () => toggleViewer(false));
-
-    // Reset Knowledge logic
-    resetVaultBtn.addEventListener("click", async () => {
-        if (!confirm("⚠️ 確定要清空目前的知識庫嗎？這將會刪除所有已載入的文件記憶。")) return;
-        
-        resetVaultBtn.disabled = true;
-        uploadStatus.textContent = "⏳ 正在清空知識庫...";
-        
-        try {
-            const response = await fetch(`${API_URL}/documents/reset`, { method: "POST" });
-            if (response.ok) {
-                uploadStatus.textContent = "🗑️ 知識庫已清空";
-                uploadStatus.style.color = "var(--success)";
-                chatMessages.innerHTML = ""; // Clear chat
-                docContent.textContent = "知識庫已重置。請重新載入文檔以開始。";
-                currentDocTitle.textContent = "No Document Loaded";
-                toggleViewer(false);
-            } else {
-                uploadStatus.textContent = "❌ 清空失敗";
-                uploadStatus.style.color = "var(--error)";
-            }
-        } catch (error) {
-            uploadStatus.textContent = "❌ 連線錯誤";
-        } finally {
-            resetVaultBtn.disabled = false;
-        }
-    });
 
     // Verify Credentials
     async function verifyCredentials(apiKey = "", password = "") {

@@ -89,14 +89,6 @@ async def view_document(filename: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/reset")
-async def reset_knowledge_base():
-    """
-    一鍵清空向量資料庫
-    """
-    success = vector_store_service.reset_store()
-    if success:
-        return {"message": "Knowledge base cleared successfully"}
-    else:
-        raise HTTPException(status_code=500, detail="Failed to clear knowledge base")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 

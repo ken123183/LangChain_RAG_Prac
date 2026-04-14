@@ -39,30 +39,12 @@ class VectorStoreService:
         )
         return vectorstore.as_retriever(search_kwargs={"k": 3})
 
-    def reset_store(self):
-        """
-        透過 Chroma API 徹底清空向量庫，比直接刪除資料夾更穩定。
-        """
-        import os
-        try:
-            # 這裡我們不帶 API Key，因為 delete_collection 不需要 Embedding 模型
-            # 隨便給一個空的 Embedding Function 即可初始化物件
-            from langchain_community.embeddings import FakeEmbeddings
-            vectorstore = Chroma(
-                persist_directory=self.persist_directory,
-                embedding_function=FakeEmbeddings(size=768)
-            )
-            vectorstore.delete_collection()
-            
-            # 為了保險起見，如果目錄還在（空目錄），我們再清一次
-            import shutil
-            if os.path.exists(self.persist_directory):
-                shutil.rmtree(self.persist_directory)
-            os.makedirs(self.persist_directory, exist_ok=True)
-            
-            return True
-        except Exception as e:
-            print(f"Reset failed: {e}")
-            return False
+    def get_retriever(self, api_key: str):
+        embeddings = self._get_embeddings(api_key)
+        vectorstore = Chroma(
+            persist_directory=self.persist_directory,
+            embedding_function=embeddings
+        )
+        return vectorstore.as_retriever(search_kwargs={"k": 3})
 
 vector_store_service = VectorStoreService()
