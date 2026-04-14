@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Langchain RAG Chat</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>RAG System</h2>
+            </div>
+            
+            <div class="settings-section">
+                <h3>Settings</h3>
+                <div class="input-group">
+                    <label for="api-key">Google API Key (Private)</label>
+                    <input type="password" id="api-key" placeholder="Enter API Key">
+                    <button id="save-key-btn" class="secondary-btn">Save Key</button>
+                </div>
+                <div class="input-group">
+                    <label for="demo-password">Demo Access Password</label>
+                    <input type="password" id="demo-password" placeholder="Or enter Demo Password">
+                </div>
+            </div>
+
+            <div class="upload-section">
+                <h3>Document Training</h3>
+                <div class="input-group">
+                    <label for="file-upload">Upload PDF/TXT</label>
+                    <input type="file" id="file-upload" accept=".pdf,.txt">
+                    <button id="upload-btn" class="primary-btn">Train Model</button>
+                </div>
+                <div id="upload-status" class="status-message"></div>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-container">
+            <div class="chat-header">
+                <h2>Chat with your Documents</h2>
+            </div>
+            
+            <div id="chat-messages" class="chat-messages">
+                <div class="message system-message">
+                    Welcome! Please enter your Google API Key and upload a document to begin.
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Ask a question about your documents...">
+                <button id="send-btn" class="primary-btn">Send</button>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

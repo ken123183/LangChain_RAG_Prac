@@ -1,0 +1,14 @@
+venv/
+.env
+__pycache__/
+*.pyc
+.git/
+.gitignore
+chroma_db/
+uploaded_docs/
+.vscode/
+.idea/
+implementation_plan.md
+learning_report.md
+task.md
+walkthrough.md
