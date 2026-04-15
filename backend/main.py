@@ -31,9 +31,14 @@ app.add_middleware(
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
 # Serve Frontend Static Files
-frontend_path = os.path.join(os.getcwd(), "frontend")
+# 智慧偵測：嘗試在當前目錄或上一層目錄尋找 frontend
+current_dir = os.getcwd()
+frontend_path = os.path.join(current_dir, "frontend")
+if not os.path.exists(frontend_path):
+    # 如果沒找到，往上一層找 (適用於在 backend 目錄啟動的情況)
+    frontend_path = os.path.join(os.path.dirname(current_dir), "frontend")
+
 if os.path.exists(frontend_path):
-    # Mount everything at / instead of /static so relative paths in HTML work
     app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
 else:
     @app.get("/")

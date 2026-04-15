@@ -219,9 +219,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!uniqueSources[key]) uniqueSources[key] = s;
             });
 
+            // 修正路徑解析逻辑，確保 Windows/Linux 都能正確抓取檔名
             sourcesHtml = `<div class="source-box"><strong>📚 來源引用:</strong><br>${Object.values(uniqueSources).map(s => {
                 const pageInfo = s.page ? ` (第 ${s.page} 頁)` : "";
-                const sourceName = s.source.split(/[\\/]/).pop();
+                const rawSource = s.source || "未知文件";
+                const sourceName = rawSource.split(/[\\/]/).pop();
                 return `• ${sourceName}${pageInfo}: ${s.content.substring(0, 60)}...`;
             }).join("<br>")}</div>`;
         }
@@ -248,16 +250,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ query, api_key: credentials.apiKey, password: credentials.password })
             });
+            
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ detail: "伺服器內部錯誤" }));
+                throw new Error(errorData.detail || "無法連線至 AI 引擎");
+            }
+
             const data = await response.json();
             chatMessages.removeChild(loadingMsg);
-            if (response.ok) appendMessage("bot", data.reply, data.sources);
-            else {
-                appendMessage("bot", `❌ 錯誤: ${data.detail || "內部伺服器錯誤"}`);
-                if (response.status === 401) updateAuthUI('error');
-            }
+            appendMessage("bot", data.reply, data.sources);
         } catch (error) {
             if (loadingMsg.parentNode) chatMessages.removeChild(loadingMsg);
-            appendMessage("bot", "❌ 連線出錯。請檢查 API Key 或網路。");
+            appendMessage("bot", `❌ 系統錯誤: ${error.message}`);
+            console.error(error);
         } finally {
             sendBtn.disabled = false;
         }
