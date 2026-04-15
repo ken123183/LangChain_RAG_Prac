@@ -10,3 +10,5 @@ chromadb
 python-dotenv
 python-multipart
 pypdf
+langchain-groq
+langchain-huggingface

@@ -7,6 +7,7 @@ llm_service.py
 並回傳答案與引用來源。
 """
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
@@ -18,12 +19,21 @@ class LLMService:
         # Get effective API key using auth helper
         effective_api_key = get_effective_api_key(api_key, password)
 
-        # Initialize Gemini LLM
-        llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash", 
-            google_api_key=effective_api_key, 
-            temperature=0.3
-        )
+        # 智慧模型切換邏輯
+        if effective_api_key.startswith("gsk_"):
+            # 使用 Groq 高速引擎
+            llm = ChatGroq(
+                model="llama-3.3-70b-versatile",
+                groq_api_key=effective_api_key,
+                temperature=0.3
+            )
+        else:
+            # 維持使用 Google Gemini
+            llm = ChatGoogleGenerativeAI(
+                model="gemini-2.0-flash", 
+                google_api_key=effective_api_key, 
+                temperature=0.3
+            )
         
         # Build chain using LCEL
         retriever = vector_store_service.get_retriever(effective_api_key)

@@ -15,8 +15,12 @@ async def verify_credentials(request: VerifyRequest):
     此端點僅用於 UI 反饋。
     """
     if request.api_key and request.api_key.strip():
-        # 放寬檢查，只要不為空即視為自備 Key，實際有效性交由 LLM 執行時判定
-        return {"status": "success", "message": "API Key 已接收"}
+        # 智慧金鑰識別
+        key = request.api_key.strip()
+        if key.startswith("gsk_"):
+            return {"status": "success", "message": "識別為 Groq 高速金鑰"}
+        else:
+            return {"status": "success", "message": "識別為 Google Gemini 金鑰"}
 
     if request.password:
         if request.password == settings.DEMO_PASSWORD:
