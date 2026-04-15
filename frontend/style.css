@@ -203,3 +203,17 @@ body {
 
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-thumb { background: var(--border-glass); border-radius: 10px; }
+
+.engine-tag {
+    margin-top: 0.75rem;
+    padding: 0.35rem 0.65rem;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 6px;
+    font-size: 0.65rem;
+    color: var(--success);
+    display: inline-block;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}

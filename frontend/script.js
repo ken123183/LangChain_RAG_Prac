@@ -208,9 +208,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Chat Logic
-    function appendMessage(role, content, sources = []) {
+    function appendMessage(role, content, sources = [], engine = "", keyHint = "") {
         const container = document.createElement("div");
         container.className = `msg-container ${role}`;
+        
+        let engineHtml = "";
+        if (role === "bot" && engine) {
+            engineHtml = `<div class="engine-tag">⚡ ${engine} | 🔑 ${keyHint}</div>`;
+        }
+
         let sourcesHtml = "";
         if (sources && sources.length > 0) {
             const uniqueSources = {};
@@ -227,7 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return `• ${sourceName}${pageInfo}: ${s.content.substring(0, 60)}...`;
             }).join("<br>")}</div>`;
         }
-        container.innerHTML = `<div class="msg-bubble">${content.replace(/\n/g, '<br>')}${sourcesHtml}</div>`;
+        container.innerHTML = `<div class="msg-bubble">${content.replace(/\n/g, '<br>')}${sourcesHtml}${engineHtml}</div>`;
         chatMessages.appendChild(container);
         chatMessages.scrollTop = chatMessages.scrollHeight;
         return container;
@@ -258,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const data = await response.json();
             chatMessages.removeChild(loadingMsg);
-            appendMessage("bot", data.reply, data.sources);
+            appendMessage("bot", data.reply, data.sources, data.engine, data.key_hint);
         } catch (error) {
             if (loadingMsg.parentNode) chatMessages.removeChild(loadingMsg);
             appendMessage("bot", `❌ 系統錯誤: ${error.message}`);

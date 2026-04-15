@@ -64,7 +64,11 @@ Question: {question}
                 "metadata": doc.metadata
             })
             
-        return response.content, sources
+        # Determine engine name and key source for UI feedback
+        engine_display = "Groq (Llama 3.3)" if effective_api_key.startswith("gsk_") else "Google Gemini"
+        key_hint = f"{effective_api_key[:6]}***" if effective_api_key else "None"
+            
+        return response.content, sources, engine_display, key_hint
 
 llm_service = LLMService()
 

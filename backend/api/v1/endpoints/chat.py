@@ -18,12 +18,17 @@ class ChatRequest(BaseModel):
 @router.post("/")
 def chat(request: ChatRequest):
     try:
-        reply, sources = llm_service.generate_response(
+        reply, sources, engine, key_hint = llm_service.generate_response(
             query=request.query, 
             api_key=request.api_key,
             password=request.password
         )
-        return {"reply": reply, "sources": sources}
+        return {
+            "reply": reply, 
+            "sources": sources,
+            "engine": engine,
+            "key_hint": key_hint
+        }
     except Exception as e:
         # Standardize error message for missing credentials
         if "API Key" in str(e) or "Password" in str(e):
