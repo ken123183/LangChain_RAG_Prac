@@ -6,9 +6,11 @@ langchain-community
 langchain-core
 langchain-google-genai
 langchain-chroma
+langchain-groq
+langchain-huggingface
+sentence-transformers
+torch
 chromadb
 python-dotenv
 python-multipart
 pypdf
-langchain-groq
-langchain-huggingface
