@@ -40,11 +40,16 @@ async def load_local_document(
     """
     從伺服器的 demo_docs 目錄直接載入檔案。
     """
-    import os
-    file_path = os.path.join(os.getcwd(), "demo_docs", filename)
+    # 智慧路徑偵測
+    current_dir = os.getcwd()
+    demo_dir = os.path.join(current_dir, "demo_docs")
+    if not os.path.exists(demo_dir):
+        demo_dir = os.path.join(os.path.dirname(current_dir), "demo_docs")
+        
+    file_path = os.path.join(demo_dir, filename)
     
     if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail=f"File {filename} not found in demo_docs")
+        raise HTTPException(status_code=404, detail=f"File {filename} not found in {demo_dir}")
 
     try:
         # Process and split document using the new local method
@@ -67,11 +72,22 @@ async def view_document(filename: str):
     讀取並回傳 demo_docs 目錄下檔案的內容，用於前端預覽。
     """
     import os
-    file_path = os.path.join(os.getcwd(), "demo_docs", filename)
+    current_dir = os.getcwd()
+    
+    # 智慧偵測 demo_docs
+    demo_dir = os.path.join(current_dir, "demo_docs")
+    if not os.path.exists(demo_dir):
+        demo_dir = os.path.join(os.path.dirname(current_dir), "demo_docs")
+    
+    file_path = os.path.join(demo_dir, filename)
     
     if not os.path.exists(file_path):
         # 如果 demo_docs 找不到，也檢查一下上傳目錄 (uploaded_docs)
-        file_path = os.path.join(os.getcwd(), "uploaded_docs", filename)
+        upload_dir = os.path.join(current_dir, "uploaded_docs")
+        if not os.path.exists(upload_dir):
+            upload_dir = os.path.join(os.path.dirname(current_dir), "uploaded_docs")
+        
+        file_path = os.path.join(upload_dir, filename)
         if not os.path.exists(file_path):
             raise HTTPException(status_code=404, detail="File not found")
 
