@@ -1,8 +1,10 @@
-"""
-main.py
-FastAPI 應用程式的主要進入點。
-負責初始化 FastAPI 實例、設定 CORS 中介軟體 (Middleware)，並載入所有的 API 路由 (Routers)。
-"""
+try:
+    __import__('pysqlite3')
+    import sys
+    sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+except ImportError:
+    pass
+
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
